@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Checkmate — Menu</title>
+<style>
+  :root{
+    --bg:#0b0b0b;
+    --card:#0f0f0f;
+    --gold:#b99c4b;
+    --muted:#bdbdbd;
+    --accent:#d4be6f;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#060606 0%, #0b0b0b 100%);color:#fff}
+  .container{max-width:1100px;margin:28px auto;padding:24px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:64px;height:64px;border-radius:8px;
+    background:linear-gradient(135deg,var(--gold), #e0c36b);
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b0b0b;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6); font-size:20px;
+  }
+  h1{margin:0;font-size:22px;letter-spacing:1px}
+  .lang-switch {display:flex;gap:8px}
+  .lang-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:var(--muted);cursor:pointer}
+  .lang-btn.active{border-color:var(--gold);color:var(--gold);box-shadow:0 6px 20px rgba(185,156,75,0.12)}
+  main{margin-top:18px}
+  .sections{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+  .card{background:linear-gradient(180deg,#0f0f0f 0%, #101010 100%);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 6px 20px rgba(0,0,0,0.6)}
+  .card h3{margin:0 0 8px 0;color:var(--gold)}
+  .card .meta{color:var(--muted);font-size:13px;margin-bottom:8px}
+  .thumbs{display:flex;gap:8px;flex-wrap:wrap}
+  .thumbs img{width:72px;height:54px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,0.03)}
+  .menu-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+  .item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00))}
+  .item img{width:84px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0}
+  .item .info{flex:1}
+  .price{color:var(--accent);font-weight:700}
+  footer{margin-top:22px;color:var(--muted);font-size:13px;text-align:center}
+  /* gallery page */
+  .gallery{
+    position:fixed;inset:0;background:rgba(2,2,2,0.92);display:none;flex-direction:column;align-items:center;padding:28px;z-index:9999
+  }
+  .gallery .top{width:100%;display:flex;justify-content:space-between;align-items:center;color:var(--muted);margin-bottom:12px}
+  .gallery .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;width:100%;max-width:1100px;overflow:auto;padding:8px}
+  .gallery img{width:100%;height:170px;object-fit:cover;border-radius:8px}
+  .close-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer}
+  /* language directions */
+  [dir="rtl"]{direction:rtl}
+  @media (max-width:600px){
+    .item img{width:72px;height:56px}
+  }
+</style>
+</head>
+<body>
+<div class="container" id="app">
+  <header>
+    <div class="brand">
+      <div class="logo">CM</div>
+      <div>
+        <h1 data-i18n="title">Checkmate — Menu</h1>
+        <div style="color:var(--muted);font-size:13px" data-i18n="tagline">Fine dining · Black & Gold · Authentic flavors</div>
+      </div>
+    </div>
+    <div class="lang-switch" role="tablist" aria-label="Language switcher">
+      <button class="lang-btn active" data-lang="en">🇬🇧 English</button>
+      <button class="lang-btn" data-lang="ar">🇸🇦 العربية</button>
+      <button class="lang-btn" data-lang="ku">🇹🇯 کوردی (بادینی)</button>
+    </div>
+  </header>
+
+  <main>
+    <section style="margin-top:18px">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+        <h2 style="margin:0" data-i18n="menu_heading">Our Menu</h2>
+        <div style="color:var(--muted);font-size:13px" data-i18n="choose_lang">اختر لغة لعرض القائمة</div>
+      </div>
+
+      <div class="sections" id="sectionsContainer" style="margin-top:14px">
+        <!-- sections injected by JS -->
+      </div>
+    </section>
+
+    <section style="margin-top:22px">
+      <div class="card">
+        <h3 data-i18n="popular_heading">Popular Items</h3>
+        <div class="menu-grid" id="itemsContainer">
+          <!-- items injected by JS -->
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div data-i18n="footer_note">© Checkmate — All rights reserved</div>
+    </footer>
+  </div>
+</div>
+
+<!-- gallery modal -->
+<div class="gallery" id="gallery">
+  <div class="top">
+    <div style="display:flex;gap:12px;align-items:center">
+      <strong id="galleryTitle" style="color:var(--gold)"></strong>
+      <span id="galleryCount" style="color:var(--muted);font-size:13px"></span>
+    </div>
+    <div>
+      <button class="close-btn" id="closeGallery" data-i18n="close">Close</button>
+    </div>
+  </div>
+  <div class="grid" id="galleryGrid"></div>
+</div>
+
+<script>
+/* ----- Data (menu + translations + images) ----- */
+/* Note: Images are sourced from Unsplash (real images). You can replace any URL with your preferred image. */
+const menuData = {
+  sections: [
+    {
+      id: "mains",
+      key: "main_dishes",
+      images: [
+        "https://source.unsplash.com/collection/190727/800x600", // mixed mains
+        "https://source.unsplash.com/800x600/?steak",
+        "https://source.unsplash.com/800x600/?grill"
+      ],
+      items: [
+        { id:"m1", price:"9.50", img:"https://source.unsplash.com/400x300/?chicken-dish" },
+        { id:"m2", price:"12.00", img:"https://source.unsplash.com/400x300/?lamb" },
+        { id:"m3", price:"11.00", img:"https://source.unsplash.com/400x300/?fish-dish" }
+      ]
+    },
+    {
+      id: "drinks",
+      key: "drinks",
+      images: [
+        "https://source.unsplash.com/800x600/?juice",
+        "https://source.unsplash.com/800x600/?cocktail",
+        "https://source.unsplash.com/800x600/?smoothie"
+      ],
+      items: [
+        { id:"d1", price:"2.50", img:"https://source.unsplash.com/400x300/?orange-juice" },
+        { id:"d2", price:"3.00", img:"https://source.unsplash.com/400x300/?lemonade" },
+        { id:"d3", price:"3.50", img:"https://source.unsplash.com/400x300/?milkshake" }
+      ]
+    },
+    {
+      id: "sweets",
+      key: "desserts",
+      images: [
+        "https://source.unsplash.com/800x600/?dessert",
+        "https://source.unsplash.com/800x600/?cake",
+        "https://source.unsplash.com/800x600/?baklava"
+      ],
+      items: [
+        { id:"s1", price:"4.50", img:"https://source.unsplash.com/400x300/?cheesecake" },
+        { id:"s2", price:"3.00", img:"https://source.unsplash.com/400x300/?tiramisu" },
+        { id:"s3", price:"2.50", img:"https://source.unsplash.com/400x300/?baklava" }
+      ]
+    },
+    {
+      id: "fastfood",
+      key: "fast_food",
+      images: [
+        "https://source.unsplash.com/800x600/?pizza",
+        "https://source.unsplash.com/800x600/?burger",
+        "https://source.unsplash.com/800x600/?fries"
+      ],
+      items: [
+        { id:"f1", price:"7.00", img:"https://source.unsplash.com/400x300/?pizza-slice" },
+        { id:"f2", price:"5.50", img:"https://source.unsplash.com/400x300/?burger" },
+        { id:"f3", price:"2.50", img:"https://source.unsplash.com/400x300/?fries" }
+      ]
+    }
+  ],
+  translations: {
+    en: {
+      title: "Checkmate — Menu",
+      tagline: "Fine dining · Black & Gold · Authentic flavors",
+      menu_heading: "Our Menu",
+      choose_lang: "Choose a language to display menu",
+      main_dishes: "Main Dishes",
+      drinks: "Juices & Drinks",
+      desserts: "Desserts",
+      fast_food: "Pizza / Fast Food",
+      popular_heading: "Popular Items",
+      close: "Close",
+      footer_note: "© Checkmate — All rights reserved",
+      // items by id (simple examples)
+      items: {
+        m1: {name:"Grilled Chicken Deluxe", desc:"Served with herbs & saffron rice"},
+        m2: {name:"Slow-Roast Lamb", desc:"Tender lamb with rosemary jus"},
+        m3: {name:"Pan-Seared Fish", desc:"Local catch with lemon butter"},
+        d1: {name:"Fresh Orange Juice", desc:"Cold-pressed oranges"},
+        d2: {name:"Classic Lemonade", desc:"Fresh lemons, mint"},
+        d3: {name:"Vanilla Milkshake", desc:"Creamy vanilla milkshake"},
+        s1: {name:"Cheesecake", desc:"Rich cream cheese filling"},
+        s2: {name:"Tiramisu", desc:"Italian coffee dessert"},
+        s3: {name:"Baklava", desc:"Honey & pistachio layers"},
+        f1: {name:"Margherita Pizza", desc:"Tomato, mozzarella, basil"},
+        f2: {name:"Cheeseburger", desc:"100% beef patty & cheddar"},
+        f3: {name:"Crispy Fries", desc:"Seasoned hand-cut fries"}
+      }
+    },
+    ar: {
+      title: "قائمة Checkmate",
+      tagline: "تجربة فاخرة · أسود وذهبي · نكهات أصلية",
+      menu_heading: "قائمتنا",
+      choose_lang: "اختر لغة لعرض القائمة",
+      main_dishes: "الأكلات الرئيسية",
+      drinks: "العصائر والمشروبات",
+      desserts: "الحلويات",
+      fast_food: "البيتزا / الفاست فود",
+      popular_heading: "الأطباق الشهيرة",
+      close: "إغلاق",
+      footer_note: "© Checkmate — جميع الحقوق محفوظة",
+      items: {
+        m1: {name:"دجاج مشوي ديلوكس", desc:"يُقدم مع أعشاب وأرز بالزعفران"},
+        m2: {name:"لحم الضأن المشوي ببطء", desc:"لحم طري مع صوص الروزماري"},
+        m3: {name:"سمك مقلي بحرص", desc:"سمك محلي مع زبدة الليمون"},
+        d1: {name:"عصير برتقال طازج", desc:"مستخرج بارد من البرتقال"},
+        d2: {name:"ليمونادة كلاسيكية", desc:"ليمون طازج ونعناع"},
+        d3: {name:"ميلكشيك فانيلا", desc:"ميلكشيك فانيلا كريمي"},
+        s1: {name:"تشيز كيك", desc:"حشوة جبن كريمي غنية"},
+        s2: {name:"تيراميسو", desc:"حلوى إيطالية بالقهوة"},
+        s3: {name:"بقلاوة", desc:"طبقات عسل وفستق"},
+        f1: {name:"بيتزا مارغريتا", desc:"طماطم، موزاريلا، ريحان"},
+        f2: {name:"تشيز برجر", desc:"لحم بقري 100% مع شيدر"},
+        f3: {name:"بطاطا مقلية مقرمشة", desc:"بطاطا مقطعة ومتبلة"}
+      }
+    },
+    ku: {
+      /* Kurdish Badini - I used common Badini expressions; if you want exact/local wording I can refine it per your notes */
+      title: "Checkmate — لیسته",
+      tagline: "تەمەنێکی فاخەر · ڕەش و زەرد · خۆشمووەکانى دەروونی",
+      menu_heading: "لیستەی ئیمان",
+      choose_lang: "زمانێک هەلبژێر بۆ نمایش کرن",
+      main_dishes: "خواردنە سەرەکییەکان",
+      drinks: "عصێر و خۆراکەوان",
+      desserts: "شیرینیەکان",
+      fast_food: "پیتزا / فاست فود",
+      popular_heading: "خواردنە پۆپولەرەکان",
+      close: "داختن",
+      footer_note: "© Checkmate — ھەموو مافیەکان پاشەکەوتن",
+      items: {
+        m1: {name:"مرغی گریل کراو (دیلۆکس)", desc:"بە هەڵەتی هەرب و برنجی زەعفران"},
+        m2: {name:"گۆشتی مانگی ڕاستکران", desc:"گۆشتێکی نرم بە سۆسێ رۆزمەری"},
+        m3: {name:"ماهی پەن-سیر", desc:"ماهی ناوخۆیی بە مایەی لێمۆن"},
+        d1: {name:"ئاوی پۆرتەقالی تازە", desc:"پەڕەکراوی ساڵەم"},
+        d2: {name:"لێمۆنەید کلاسیک", desc:"لێمون و نعناع تازە"},
+        d3: {name:"میلکشێکی ڤانیلا", desc:"میلکشێکی کریمی ڤانیلا"},
+        s1: {name:"چییزکێک", desc:"داخڵکردنی پنیری قورس"},
+        s2: {name:"تیرا میسو", desc:"شیرینیی ئیتالیا و کافە"},
+        s3: {name:"باكلەوە", desc:"لەیرەی ھەڵ و پەستەق"},
+        f1: {name:"پیتزای مارگرێتا", desc:"تۆمات، موزارێلا، بازلێک"),
+        f2: {name:"چەزبورگەر", desc:"پەتەی گوشت ١٠٠% و چیدەر"},
+        f3: {name:"فرایس کراسپی", desc:"فرایسی دەستکەوتەکان"
+        }
+      }
+    }
+  }
+};
+
+/* ----- Utilities ----- */
+const langs = ["en","ar","ku"];
+let currentLang = "en";
+
+/* render sections */
+function renderSections(){
+  const container = document.getElementById('sectionsContainer');
+  container.innerHTML = "";
+  menuData.sections.forEach(sec=>{
+    const t = translate(sec.key);
+    const card = document.createElement('div');
+    card.className = "card";
+    card.innerHTML = `
+      <h3>${escapeHtml(t)}</h3>
+      <div class="meta">${translate('choose_lang')}</div>
+      <div class="thumbs">
+        ${sec.images.slice(0,4).map((u,i)=><img data-sec="${sec.id}" data-imgidx="${i}" src="${u}" alt="${escapeHtml(t)} ${i+1}" loading="lazy">).join('')}
+      </div>
+      <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+        <div style="color:var(--muted);font-size:13px">${sec.items.length} items</div>
+        <button class="lang-btn" data-open="${sec.id}" style="padding:6px 10px;color:var(--gold);border-color:transparent;background:rgba(185,156,75,0.08)"> ${langLabel('open')} </button>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+/* render popular items */
+function renderItems(){
+  const container = document.getElementById('itemsContainer');
+  container.innerHTML = "";
+  // take first item of each section as popular
+  menuData.sections.forEach(sec=>{
+    const it = sec.items[0];
+    const t = menuData.translations[currentLang].items[it.id];
+    const itemEl = document.createElement('div');
+    itemEl.className = "item card";
+    itemEl.style.alignItems="center";
+    itemEl.innerHTML = `
+      <img src="${it.img}" alt="${escapeHtml(t ? t.name : '')}" loading="lazy">
+      <div class="info">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">${escapeHtml(t ? t.name : '')}</div>
+            <div style="color:var(--muted);font-size:13px">${escapeHtml(t ? t.desc : '')}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="price">${it.price} USD</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:6px">${translate('from') || ''}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(itemEl);
+  });
+}
+
+/* translation helper */
+function translate(key){
+  const tset = menuData.translations[currentLang] || menuData.translations.en;
+  return (tset[key] !== undefined) ? tset[key] : (menuData.translations.en[key] || key);
+}
+function langLabel(action){
+  // small helper for button text (open)
+  const map = { en:{open:"Open"}, ar:{open:"فتح"}, ku:{open:"کڕێّن"} };
+  return (map[currentLang] && map[currentLang][action]) ? map[currentLang][action] : action;
+}
+
+/* escape */
+function escapeHtml(s){ if(!s) return ""; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+/* apply translations for static elements */
+function applyStaticTranslations(){
+  // standard keys for top-level texts
+  const keys = ["title","tagline","menu_heading","choose_lang","popular_heading","close","footer_note"];
+  keys.forEach(k=>{
+    document.querySelectorAll([data-i18n="${k}"]).forEach(el=>{
+      el.textContent = menuData.translations[currentLang][k] || menuData.translations.en[k] || k;
+    });
+  });
+  // direction: Arabic and Kurdish (Badini) often use rtl. We'll set RTL only for Arabic.
+  if(currentLang === "ar"){
+    document.documentElement.setAttribute('dir','rtl');
+  } else {
+    document.documentElement.setAttribute('dir','ltr');
+  }
+}
+
+/* build menu item names (from translations) */
+function buildItemDisplayName(id){
+  const t = (menuData.translations[currentLang].items && menuData.translations[currentLang].items[id]) || 
+            (menuData.translations.en.items && menuData.translations.en.items[id]) || {name:id,desc:""};
+  return t;
+}
+
+/* populate everything */
+function refreshUI(){
+  // language switcher active states
+  document.querySelectorAll('.lang-btn[data-lang]').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang') === currentLang);
+  });
+  applyStaticTranslations();
+  renderSections();
+  renderItems();
+  // update each item card's text (names)
+  // also attach event listeners
+  attachHandlers();
+}
+
+/* gallery open/close */
+function openGallery(sectionId){
+  const sec = menuData.sections.find(s=>s.id===sectionId);
+  if(!sec) return;
+  const g = document.getElementById('gallery');
+  const title = document.getElementById('galleryTitle');
+  const count = document.getElementById('galleryCount');
+  const grid = document.getElementById('galleryGrid');
+  title.textContent = menuData.translations[currentLang][sec.key] || menuData.translations.en[sec.key];
+  grid.innerHTML = "";
+  sec.images.forEach((u,idx)=>{
+    const img = document.createElement('img');
+    img.src = u;
+    img.alt = ${title.textContent} ${idx+1};
+    grid.appendChild(img);
+  });
+  count.textContent = ${sec.images.length} photos;
+  g.style.display = "flex";
+}
+
+/* attach click handlers for thumbnails and open buttons */
+function attachHandlers(){
+  // open section buttons
+  document.querySelectorAll('[data-open]').forEach(btn=>{
+    btn.onclick = ()=> openGallery(btn.getAttribute('data-open'));
+  });
+  // thumbs clickable -> open gallery for that section
+  document.querySelectorAll('.thumbs img').forEach(img=>{
+    img.onclick = (e)=>{
+      const s = e.target.getAttribute('data-sec');
+      openGallery(s);
+    };
+  });
+  // language buttons on top
+  document.querySelectorAll('.lang-switch .lang-btn').forEach(b=>{
+    if(b.hasAttribute('data-lang')){
+      b.onclick = ()=>{
+        const pick = b.getAttribute('data-lang');
+        currentLang = pick;
+        refreshUI();
+      };
+    }
+  });
+  // close gallery
+  document.getElementById('closeGallery').onclick = ()=>{ document.getElementById('gallery').style.display='none'; };
+  // close on background click
+  document.getElementById('gallery').onclick = (e)=>{
+    if(e.target === document.getElementById('gallery')) document.getElementById('gallery').style.display='none';
+  };
+}
+
+/* small localization keys not present above */
+menuData.translations.en.from = "From";
+menuData.translations.ar.from = "من";
+menuData.translations.ku.from = "لە";
+
+/* initial render */
+refreshUI();
+</script>
+</body>
+</html>
